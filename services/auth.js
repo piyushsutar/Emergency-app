@@ -5,7 +5,7 @@
     function getUsers() {
         try {
             return JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
-        } catch {
+        } catch (error) {
             return {};
         }
     }
@@ -15,8 +15,11 @@
     }
 
     window.sosAuth = {
+
         async register(name, email, phone, password, confirmPassword) {
+            name = name.trim();
             email = email.trim().toLowerCase();
+            phone = phone.trim();
 
             if (!name || !email || !phone || !password) {
                 throw new Error("Please fill all fields.");
@@ -37,16 +40,20 @@
             }
 
             users[email] = {
-                name,
-                email,
-                phone,
-                password
+                name: name,
+                email: email,
+                phone: phone,
+                password: password
             };
 
             saveUsers(users);
 
             const session = { name, email, phone };
-            localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+
+            localStorage.setItem(
+                SESSION_KEY,
+                JSON.stringify(session)
+            );
 
             return session;
         },
@@ -67,16 +74,29 @@
                 phone: user.phone
             };
 
-            localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+            localStorage.setItem(
+                SESSION_KEY,
+                JSON.stringify(session)
+            );
+
             return session;
         },
 
         async getSession() {
             try {
-                return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-            } catch {
+                return JSON.parse(
+                    localStorage.getItem(SESSION_KEY) || "null"
+                );
+            } catch (error) {
                 return null;
             }
+        },
+
+        async setSession(session) {
+            localStorage.setItem(
+                SESSION_KEY,
+                JSON.stringify(session)
+            );
         },
 
         async logout() {
@@ -101,6 +121,7 @@
             }
 
             users[email].password = newPassword;
+
             saveUsers(users);
         }
     };
