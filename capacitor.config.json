@@ -1,0 +1,15 @@
+{
+  "appId": "com.emergencysos.app",
+  "appName": "Emergency SOS",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "Geolocation": {},
+    "Camera": {},
+    "Preferences": {}
+  },
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
+}

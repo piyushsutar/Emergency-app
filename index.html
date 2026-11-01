@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#E50914">
+    <title>Emergency SOS &amp; Safety Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app" class="app-container">
+
+        <!-- ==================== AUTH SCREEN ==================== -->
+        <section id="authScreen" class="screen-view active">
+            <div class="auth-wrapper">
+                <div class="auth-header">
+                    <div class="brand-badge">
+                        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M12 8v4M12 16h.01"/>
+                        </svg>
+                    </div>
+                    <h1 class="brand-title">EMERGENCY SOS</h1>
+                    <p class="brand-subtitle">Personal Safety &amp; Rapid Incident Management</p>
+                </div>
+
+                <!-- Auth Navigation Tabs -->
+                <div class="auth-tabs">
+                    <button type="button" class="tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Login</button>
+                    <button type="button" class="tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Register</button>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="authAlert" class="alert-box hidden"></div>
+
+                <!-- LOGIN FORM -->
+                <form id="loginForm" class="auth-form" onsubmit="handleLoginSubmit(event)">
+                    <div class="input-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="name@example.com" required autocomplete="email">
+                    </div>
+                    <div class="input-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+                    <div class="form-row remember-forgot">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="rememberMe" checked>
+                            <span>Remember Me</span>
+                        </label>
+                        <a href="javascript:void(0)" class="link-text" onclick="openForgotPasswordModal()">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">
+                        <span>Sign In to Dashboard</span>
+                    </button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="registerForm" class="auth-form hidden" onsubmit="handleRegisterSubmit(event)">
+                    <div class="input-group">
+                        <label for="regName">Full Name</label>
+                        <input type="text" id="regName" placeholder="e.g. John Doe" required autocomplete="name">
+                    </div>
+                    <div class="input-group">
+                        <label for="regEmail">Email Address</label>
+                        <input type="email" id="regEmail" placeholder="name@example.com" required autocomplete="email">
+                    </div>
+                    <div class="input-group">
+                        <label for="regPhone">Mobile Number (10 Digits)</label>
+                        <input type="tel" id="regPhone" placeholder="9876543210" maxlength="10" required autocomplete="tel">
+                    </div>
+                    <div class="input-group">
+                        <label for="regPassword">Password (Min. 6 chars)</label>
+                        <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+                    </div>
+                    <div class="input-group">
+                        <label for="regConfirmPassword">Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="regSubmitBtn">
+                        <span>Create Account</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ==================== MAIN DASHBOARD SCREEN ==================== -->
+        <section id="mainScreen" class="screen-view hidden">
+            <!-- Top App Bar -->
+            <header class="top-app-bar">
+                <div class="app-bar-left">
+                    <div class="app-logo-mini">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M12 8v4M12 16h.01"/>
+                        </svg>
+                    </div>
+                    <div class="app-bar-title-wrap">
+                        <span class="app-name">EMERGENCY SOS</span>
+                        <span class="clock-display" id="topClockDisplay">--:--:-- IST</span>
+                    </div>
+                </div>
+                <div class="app-bar-right">
+                    <button class="icon-button" onclick="refreshGpsLocation()" title="Refresh GPS Location">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                    </button>
+                    <div class="user-avatar-mini" onclick="navigateToTab('profile')" title="View Profile">
+                        <span id="headerAvatarText">U</span>
+                        <img id="headerAvatarImg" class="hidden" alt="Profile">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Scrollable Content Area -->
+            <main class="content-scrollable">
+
+                <!-- 1. DASHBOARD VIEW (HOME) -->
+                <div id="viewDashboard" class="sub-view active">
+                    <!-- User Welcome Banner -->
+                    <div class="profile-summary-card">
+                        <div class="summary-avatar-wrap">
+                            <div class="avatar-circle" id="dashAvatarCircle">
+                                <span id="dashAvatarInitial">U</span>
+                                <img id="dashAvatarImg" class="hidden" alt="Profile">
+                            </div>
+                        </div>
+                        <div class="summary-info">
+                            <h2 class="user-display-name" id="dashUserName">Loading...</h2>
+                            <div class="user-badges">
+                                <span class="badge blood-badge" id="dashBloodGroup">Blood: --</span>
+                                <span class="badge status-badge" id="shakeStatusBadge">Shake Alert: ON</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GPS Location Status Box -->
+                    <div class="location-status-card">
+                        <div class="card-header-compact">
+                            <div class="header-label">
+                                <svg class="header-icon pulse-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                                </svg>
+                                <span>LIVE GPS STATUS</span>
+                            </div>
+                            <button class="btn-text-small" onclick="refreshGpsLocation()">Refresh</button>
+                        </div>
+                        <div class="coords-display" id="dashCoords">Fetching coordinates...</div>
+                        <div class="location-meta" id="dashLocationMeta">Waiting for GPS lock</div>
+                        <div class="location-actions">
+                            <a id="dashMapsLink" href="javascript:void(0)" target="_blank" class="link-btn-small disabled">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Open Google Maps</span>
+                            </a>
+                            <span class="validity-tag">Valid 24 Hours</span>
+                        </div>
+                    </div>
+
+                    <!-- SOS MAIN BUTTON SECTION -->
+                    <div class="sos-center-section">
+                        <div class="sos-button-wrapper">
+                            <div class="sos-glow-ring ring-3"></div>
+                            <div class="sos-glow-ring ring-2"></div>
+                            <div class="sos-glow-ring ring-1"></div>
+                            <button type="button" class="sos-main-button" id="sosMainBtn" onclick="initiateSosProcess()">
+                                <div class="sos-inner-content">
+                                    <span class="sos-text">SOS</span>
+                                    <span class="sos-subtext">TAP TO ACTIVATE</span>
+                                </div>
+                            </button>
+                        </div>
+                        <p class="sos-caption">Sends instant GPS coordinates &amp; distress SMS to all 5 emergency contacts.</p>
+                    </div>
+
+                    <!-- Rapid Helpline Dialing Strip -->
+                    <div class="rapid-helpline-strip">
+                        <div class="section-heading">QUICK EMERGENCY SERVICES</div>
+                        <div class="helpline-buttons">
+                            <button class="btn-helpline" onclick="callHelpline('112', 'National Emergency (112)')">
+                                <span class="helpline-num">112</span>
+                                <span class="helpline-label">All Emergency</span>
+                            </button>
+                            <button class="btn-helpline" onclick="callHelpline('100', 'Police (100)')">
+                                <span class="helpline-num">100</span>
+                                <span class="helpline-label">Police</span>
+                            </button>
+                            <button class="btn-helpline" onclick="callHelpline('108', 'Ambulance (108)')">
+                                <span class="helpline-num">108</span>
+                                <span class="helpline-label">Ambulance</span>
+                            </button>
+                            <button class="btn-helpline" onclick="callHelpline('1091', 'Women Helpline (1091)')">
+                                <span class="helpline-num">1091</span>
+                                <span class="helpline-label">Women Safety</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts Quick List -->
+                    <div class="dash-contacts-section">
+                        <div class="section-header-row">
+                            <span class="section-title-text">EMERGENCY CONTACTS (5 SAVED)</span>
+                            <button class="btn-text-small" onclick="navigateToTab('contacts')">Manage</button>
+                        </div>
+                        <div id="dashContactsList" class="contacts-mini-grid">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Recent SOS Activity -->
+                    <div class="dash-recent-section">
+                        <div class="section-header-row">
+                            <span class="section-title-text">RECENT EMERGENCY HISTORY</span>
+                            <button class="btn-text-small" onclick="navigateToTab('history')">View All</button>
+                        </div>
+                        <div id="dashRecentHistory" class="recent-history-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. CONTACTS MANAGEMENT VIEW -->
+                <div id="viewContacts" class="sub-view hidden">
+                    <div class="view-header-bar">
+                        <div>
+                            <h2 class="view-title">Emergency Contacts</h2>
+                            <p class="view-desc">Save up to 5 trusted emergency contacts</p>
+                        </div>
+                        <button class="btn btn-primary btn-sm" id="addNewContactBtn" onclick="openContactModal()">
+                            <span>+ Add Contact</span>
+                        </button>
+                    </div>
+
+                    <div class="contact-counter-banner">
+                        <span>Slots Saved:</span>
+                        <strong id="contactCounterDisplay">0 / 5</strong>
+                    </div>
+
+                    <div id="contactsFullList" class="contacts-card-stack">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- 3. ADVANCED EMERGENCY HISTORY VIEW -->
+                <div id="viewHistory" class="sub-view hidden">
+                    <div class="view-header-bar">
+                        <div>
+                            <h2 class="view-title">Emergency History</h2>
+                            <p class="view-desc">Detailed logs of SOS activations, SMS &amp; calls</p>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Controls -->
+                    <div class="history-controls">
+                        <div class="search-input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                            <input type="text" id="historySearchInput" placeholder="Search by Date, Day or Mobile..." oninput="filterHistoryList()">
+                        </div>
+                        <div class="filter-pills">
+                            <button class="filter-pill active" onclick="setHistoryFilter('all')">All</button>
+                            <button class="filter-pill" onclick="setHistoryFilter('sms')">SMS Logs</button>
+                            <button class="filter-pill" onclick="setHistoryFilter('calls')">Call Logs</button>
+                        </div>
+                    </div>
+
+                    <div id="historyRecordsList" class="history-records-stack">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- 4. COMPLETE REPORTS VIEW & PDF EXPORT -->
+                <div id="viewReports" class="sub-view hidden">
+                    <div class="view-header-bar">
+                        <div>
+                            <h2 class="view-title">Emergency Reports</h2>
+                            <p class="view-desc">Auditable incident reports &amp; printable PDF export</p>
+                        </div>
+                    </div>
+
+                    <!-- Summary KPI Cards -->
+                    <div class="report-kpi-grid">
+                        <div class="kpi-card">
+                            <span class="kpi-num" id="kpiTotalSos">0</span>
+                            <span class="kpi-tag">Total SOS</span>
+                        </div>
+                        <div class="kpi-card">
+                            <span class="kpi-num" id="kpiTotalSms">0</span>
+                            <span class="kpi-tag">SMS Dispatched</span>
+                        </div>
+                        <div class="kpi-card">
+                            <span class="kpi-num" id="kpiTotalCalls">0</span>
+                            <span class="kpi-tag">Call Attempts</span>
+                        </div>
+                        <div class="kpi-card">
+                            <span class="kpi-num" id="kpiTotalContacts">0</span>
+                            <span class="kpi-tag">Active Contacts</span>
+                        </div>
+                    </div>
+
+                    <!-- PDF Generation Options -->
+                    <div class="report-actions-card">
+                        <h3 class="card-subtitle">Generate &amp; Download PDF Reports</h3>
+                        <p class="card-note">Includes complete user profile, GPS links, SMS delivery statuses and timestamps.</p>
+                        <div class="report-btn-group">
+                            <button class="btn btn-outline btn-block" onclick="generatePdfReport('daily')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                <span>Generate Today's Daily Report (PDF)</span>
+                            </button>
+                            <button class="btn btn-primary btn-block" onclick="generatePdfReport('complete')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="10 9 9 9 8 9"/></svg>
+                                <span>Generate Complete History Report (PDF)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Date Range Custom Report Generator -->
+                    <div class="report-actions-card">
+                        <h3 class="card-subtitle">Custom Date-Range Report</h3>
+                        <div class="date-range-row">
+                            <div class="input-group">
+                                <label for="reportStartDate">Start Date</label>
+                                <input type="date" id="reportStartDate">
+                            </div>
+                            <div class="input-group">
+                                <label for="reportEndDate">End Date</label>
+                                <input type="date" id="reportEndDate">
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-block" onclick="generateCustomRangeReport()">
+                            <span>Generate Range Report (PDF)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5. PERSONAL PROFILE VIEW -->
+                <div id="viewProfile" class="sub-view hidden">
+                    <div class="view-header-bar">
+                        <div>
+                            <h2 class="view-title">Personal Profile</h2>
+                            <p class="view-desc">Emergency identification and medical info</p>
+                        </div>
+                    </div>
+
+                    <form id="profileForm" onsubmit="handleProfileSave(event)">
+                        <!-- Profile Photo Section -->
+                        <div class="profile-photo-manager">
+                            <div class="avatar-large" id="profileLargeAvatar">
+                                <span id="profileAvatarLetter">U</span>
+                                <img id="profileAvatarImg" class="hidden" alt="Profile">
+                            </div>
+                            <div class="photo-controls">
+                                <label class="btn btn-sm btn-outline file-input-label">
+                                    <span>Upload Photo</span>
+                                    <input type="file" id="profilePhotoInput" accept="image/*" onchange="handlePhotoUpload(event)">
+                                </label>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="capturePhotoNative()">
+                                    <span>Capture with Camera</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="profName">Full Name *</label>
+                            <input type="text" id="profName" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="profEmail">Email ID (Registered)</label>
+                            <input type="email" id="profEmail" readonly class="input-readonly">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="profPhone">Mobile Number *</label>
+                            <input type="tel" id="profPhone" maxlength="10" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="profDob">Date of Birth</label>
+                            <input type="date" id="profDob">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="profBlood">Blood Group *</label>
+                            <select id="profBlood" required>
+                                <option value="Unknown">Unknown</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="profAddress">Full Residential Address</label>
+                            <textarea id="profAddress" rows="3" placeholder="Enter complete address, landmarks, city, pincode"></textarea>
+                        </div>
+
+                        <div id="profileSaveMsg" class="alert-box hidden"></div>
+
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <span>Save Profile Information</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 6. SETTINGS VIEW -->
+                <div id="viewSettings" class="sub-view hidden">
+                    <div class="view-header-bar">
+                        <div>
+                            <h2 class="view-title">Safety Settings</h2>
+                            <p class="view-desc">Configure shake gestures, countdown and sirens</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <span class="setting-label">Shake Phone to Trigger SOS</span>
+                                <span class="setting-desc">Shaking the phone vigorously triggers emergency countdown</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="settingShakeToggle" onchange="toggleShakeSetting(this.checked)">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <span class="setting-label">SOS Countdown Siren</span>
+                                <span class="setting-desc">Play loud emergency siren during countdown</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="settingSirenToggle" onchange="toggleSirenSetting(this.checked)" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item vertical">
+                            <div class="setting-text">
+                                <span class="setting-label">Countdown Duration</span>
+                                <span class="setting-desc">Seconds to abort accidental triggers</span>
+                            </div>
+                            <select id="settingCountdownSelect" onchange="updateCountdownSetting(this.value)">
+                                <option value="3">3 Seconds (Fast)</option>
+                                <option value="5" selected>5 Seconds (Recommended)</option>
+                                <option value="10">10 Seconds (Safe)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 class="card-subtitle">App Information</h3>
+                        <p class="card-note"><strong>Application:</strong> Emergency SOS &amp; Safety Management</p>
+                        <p class="card-note"><strong>Version:</strong> 1.0.0 (Capacitor Native)</p>
+                        <p class="card-note"><strong>Storage:</strong> Persistent Multi-User IndexedDB</p>
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <button type="button" class="btn btn-danger btn-block" onclick="handleLogout()">
+                            <span>Logout from Device</span>
+                        </button>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Bottom Navigation Bar -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" id="navDashBtn" onclick="navigateToTab('dashboard')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" id="navContactsBtn" onclick="navigateToTab('contacts')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Contacts</span>
+                </button>
+                <button class="nav-item nav-sos-pill" id="navSosPill" onclick="initiateSosProcess()">
+                    <div class="nav-sos-circle">SOS</div>
+                </button>
+                <button class="nav-item" id="navHistoryBtn" onclick="navigateToTab('history')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                    <span>History</span>
+                </button>
+                <button class="nav-item" id="navReportsBtn" onclick="navigateToTab('reports')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>Reports</span>
+                </button>
+            </nav>
+        </section>
+
+        <!-- ==================== SOS COUNTDOWN OVERLAY ==================== -->
+        <div id="sosCountdownOverlay" class="emergency-overlay hidden">
+            <div class="overlay-backdrop"></div>
+            <div class="countdown-modal">
+                <div class="countdown-siren-ring"></div>
+                <div class="countdown-circle">
+                    <span id="countdownNumber">5</span>
+                </div>
+                <h2 class="countdown-title">EMERGENCY SOS ACTIVATING</h2>
+                <p class="countdown-desc">Dispersing GPS location &amp; emergency SMS to all saved contacts...</p>
+                <button type="button" class="btn btn-cancel-sos" onclick="abortSosCountdown()">
+                    <span>CANCEL SOS (FALSE ALARM)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== SOS SUCCESS MODAL ==================== -->
+        <div id="sosSuccessModal" class="emergency-overlay hidden">
+            <div class="overlay-backdrop"></div>
+            <div class="success-modal-card">
+                <div class="success-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h2 class="modal-title">EMERGENCY SOS DISPATCHED</h2>
+                <div class="modal-body-content">
+                    <p>Your emergency status and live GPS location have been registered and prepared for delivery.</p>
+                    <div class="detail-box">
+                        <div><strong>Activation Time:</strong> <span id="successModalTime">--</span></div>
+                        <div><strong>GPS Coordinates:</strong> <span id="successModalCoords">--</span></div>
+                        <div><strong>Emergency Contacts Notified:</strong> <span id="successModalContacts">--</span></div>
+                    </div>
+                </div>
+                <div class="modal-footer-actions">
+                    <button class="btn btn-primary btn-block" onclick="closeSuccessModal()">Done</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CONTACT ADD/EDIT MODAL ==================== -->
+        <div id="contactModal" class="emergency-overlay hidden">
+            <div class="overlay-backdrop" onclick="closeContactModal()"></div>
+            <div class="bottom-sheet-modal">
+                <div class="modal-header">
+                    <h3 id="contactModalTitle">Add Emergency Contact</h3>
+                    <button class="close-btn" onclick="closeContactModal()">&times;</button>
+                </div>
+                <form id="contactForm" onsubmit="handleContactSave(event)">
+                    <input type="hidden" id="contactEditId">
+                    <div class="input-group">
+                        <label for="contactName">Contact Full Name *</label>
+                        <input type="text" id="contactName" placeholder="e.g. Papa, Mom, Dr. Sharma" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="contactPhone">Mobile Number (10 Digits) *</label>
+                        <input type="tel" id="contactPhone" placeholder="9876543210" maxlength="15" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="contactRel">Relationship *</label>
+                        <select id="contactRel" required>
+                            <option value="Parent">Parent</option>
+                            <option value="Spouse">Spouse</option>
+                            <option value="Sibling">Sibling</option>
+                            <option value="Child">Child</option>
+                            <option value="Friend">Friend</option>
+                            <option value="Doctor">Doctor</option>
+                            <option value="Relative">Relative</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div id="contactErrorMsg" class="alert-box hidden"></div>
+                    <div class="form-row">
+                        <button type="button" class="btn btn-outline" onclick="closeContactModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveContactBtn">Save Contact</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== FORGOT PASSWORD MODAL ==================== -->
+        <div id="forgotPasswordModal" class="emergency-overlay hidden">
+            <div class="overlay-backdrop" onclick="closeForgotPasswordModal()"></div>
+            <div class="bottom-sheet-modal">
+                <div class="modal-header">
+                    <h3>Reset Account Password</h3>
+                    <button class="close-btn" onclick="closeForgotPasswordModal()">&times;</button>
+                </div>
+                <form id="forgotPasswordForm" onsubmit="handleForgotPasswordSubmit(event)">
+                    <div class="input-group">
+                        <label for="forgotEmail">Your Registered Email</label>
+                        <input type="email" id="forgotEmail" placeholder="name@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="forgotNewPass">New Password (Min. 6 chars)</label>
+                        <input type="password" id="forgotNewPass" minlength="6" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="forgotConfirmPass">Confirm New Password</label>
+                        <input type="password" id="forgotConfirmPass" minlength="6" required>
+                    </div>
+                    <div id="forgotMsg" class="alert-box hidden"></div>
+                    <div class="form-row">
+                        <button type="button" class="btn btn-outline" onclick="closeForgotPasswordModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="database/db.js"></script>
+    <script src="services/auth.js"></script>
+    <script src="services/location.js"></script>
+    <script src="services/sms.js"></script>
+    <script src="services/call.js"></script>
+    <script src="services/motion.js"></script>
+    <script src="services/sos.js"></script>
+    <script src="reports/pdf-generator.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

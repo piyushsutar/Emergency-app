@@ -1,0 +1,28 @@
+{
+  "name": "emergency-sos-app",
+  "version": "1.0.0",
+  "description": "Complete Emergency SOS and Safety Management Android Application",
+  "main": "index.html",
+  "scripts": {
+    "build": "node copy-www.js",
+    "sync": "node copy-www.js && npx cap sync android",
+    "open:android": "npx cap open android",
+    "build:apk": "cd android && gradlew.bat assembleDebug",
+    "eas-build": "npx eas-cli build --platform android --profile preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/camera": "^8.2.6",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/geolocation": "^8.2.4",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/motion": "^8.0.1",
+    "@capacitor/preferences": "^8.0.1"
+  }
+}
